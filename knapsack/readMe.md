@@ -18,7 +18,7 @@ You can query outcome by field:
 
 An example:
 
-![image-20200725175941608](C:\Users\Qiu Junyan\AppData\Roaming\Typora\typora-user-images\image-20200725175941608.png)
+![image](https://github.com/aitexia/ORtools/blob/master/image/knapsack.PNG)
 
 which means:
 
