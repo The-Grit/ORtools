@@ -15,8 +15,9 @@ You can solve this problem by function:
 You can query outcome by field:
 	<br>&emsp;&emsp;```**ins.maxIncome**``` means the optimal value.
 	<br>&emsp;&emsp;```**ins.collection**``` means the optimal choice of items,the data structure is set,the element of this set is the index of items.
-
 An example:
+
+
 ![image](https://github.com/aitexia/ORtools/blob/master/image/knapsack2.PNG)
 ![image](https://github.com/aitexia/ORtools/blob/master/image/knapsack1.PNG)
 
