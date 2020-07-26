@@ -1,7 +1,7 @@
 This is a solver that can solve multi-dimensional 0-1 knapsack problem.
 
 You can create a knapsack problem solver by entering code:
-	<br>&emsp;&emsp;**```ins=Knapsack([param1,param2,param3])```**
+	<br>&emsp;&emsp;**```ins=Knapsack(param1,param2,param3)```**
 
 param1 is the value of items.The data structure is a list like [1,2,3].
 
