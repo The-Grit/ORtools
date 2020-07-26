@@ -1,3 +1,5 @@
+import numpy as np
+
 class Knapsack():
     def __init__(self,param1,param2,param3):   
         self.value=param1
