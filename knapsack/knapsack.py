@@ -1,69 +1,62 @@
 class Knapsack():
-    def __init__(self,params):   
-        self.value=params[0]
-        self.n=len(self.value)
+    def __init__(self,param1,param2,param3):   
+        self.value=param1
+        self.m=len(self.value)
         
-        self.cap=params[1]
-        self.weight=params[2]
-        self.m=len(self.cap)
+        self.cap=param2
+        self.weight=param3
+        self.dim=tuple([self.m]+[i+1 for i in self.cap])
+        self.n=len(self.cap)
         
         self.collection=set()
         self.maxIncome=None
         
-        self.choose={}
-        self.memory={}
+        self.state=np.zeros(self.dim)
         
-    def compress(self,remainObj):
-        num=0
-        for i in remainObj:
-            num+=1<<i
-        return num
-    
-    def dynamicRecursion(self,cap,remainObj):
-        if not remainObj:
-            return 0
-        compressNum=self.compress(remainObj)
-        if compressNum in self.memory:
-            return self.memory[compressNum]
-        maxV=float('-inf')
-        bestObj=-1
-        allOverWeight=True
-        for obj in remainObj:
-            overWeight=False
+    def recursiveFor(self,i,nowd,cap):
+        if nowd==self.n+1:
             cap2=cap[:]
-            for i in range(self.m):
-                if self.weight[i][obj]>cap[i]:
+            overWeight=False
+            for j in range(self.n):
+                cap2[j]=cap[j]-self.weight[i][j]
+                if self.weight[i][j]>cap[j]:
                     overWeight=True
                     break
-                else:
-                    cap2[i]=cap2[i]-self.weight[i][obj]
+            ind1=tuple([i]+cap)
+            ind2=tuple([i-1]+cap)
+            ind3=tuple([i-1]+cap2)
             if overWeight:
-                continue  
-            allOverWeight=False
-            remainObj2=remainObj[:]
-            remainObj2.remove(obj)
-            Value=self.value[obj]+self.dynamicRecursion(cap2,remainObj2)
-            if Value>maxV:
-                maxV=Value
-                bestObj=obj  
-        if allOverWeight:
-            return 0
-        self.memory[compressNum]=maxV
-        self.choose[compressNum]=bestObj              
-        return maxV
-                       
+                if i==0:
+                    self.state[ind1]=0
+                else:
+                    self.state[ind1]=self.state[ind2]
+            else:
+                if i==0:
+                    self.state[ind1]=self.value[i]
+                else:                    
+                    self.state[ind1]=max(self.state[ind2],self.state[ind3]+self.value[i])           
+        else:
+            for k in range(self.dim[nowd]):
+                self.recursiveFor(i,nowd+1,cap+[k])
+                
     def retro(self):
-        remainObj=[i for i in range(self.n)]
-        while True:
-            compressNum=self.compress(remainObj)
-            obj=self.choose.get(compressNum,-1)
-            if obj==-1:
-                break
-            self.collection.add(obj)
-            remainObj.remove(obj)
-               
-    def solve(self):
         cap=self.cap[:]
-        remainObj=[i for i in range(self.n)]
-        self.maxIncome=self.dynamicRecursion(cap,remainObj)
+        self.maxIncome=self.state[tuple([self.m-1]+cap)]
+        for i in range(self.m-1,-1,-1):
+            ind1=tuple([i]+cap)
+            ind2=tuple([i-1]+cap)
+            if i==0:
+                if self.state[ind1]!=0:
+                    self.collection.add(i)
+            else:
+                if self.state[ind1]!=self.state[ind2]:
+                    self.collection.add(i)
+                    for j in range(self.n):
+                        cap[j]-=self.weight[i][j]
+                
+    def solve(self):
+        nowd=1
+        cap=[]
+        for i in range(self.m):
+            self.recursiveFor(i,nowd,cap)
         self.retro()
