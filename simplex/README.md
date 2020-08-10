@@ -1,4 +1,29 @@
-# ORtools
-A simple toy solving linear program,integer program,knapsack problem,shortest path and maximum flow.
-Now includes:
-knapsack problem solver;
+# simplex
+这是一个线性规划求解器，使用了两阶段的单纯形法。
+缺点：不支持循环解的解决（出现循环的可能性很小）；不支持变量为负的情况（需要手动对变量进行线性变换，使得变量非负）。
+
+使用例子：
+![image](https://github.com/aitexia/ORtools/blob/master/image/simplex.PNG)
+
+使用数据：
+
+**goal=1 # 最大化则goal=1，最小化则goal=0
+    <br>cost=[36,40,50,22,20,30,25,48,58,61] # 10个变量在目标函数中的系数
+    <br>coefficient=[
+    <br># 10个变量在每行约束中的系数（无需手动加入松弛变量、剩余变量、人工变量）
+    <br># 若变量在某行的系数为0，则需要将0也加入该嵌套列表
+    <br>[100,120,150,80,70,90,80,140,160,180],
+    <br>[1,1,1,0,0,0,0,0,0,0],
+    <br>[0,0,0,1,1,0,0,0,0,0],
+    <br>[0,0,0,0,0,1,1,0,0,0],
+    <br>[0,0,0,0,0,0,0,1,1,1]]
+    <br>constant=[720,2,1,1,2] # 5行约束的右端常数项
+    <br>relation=[0,0,2,2,2] # 5行约束每行的约束关系。0表示小于等于号、1表示等于号、2表示大于等于号**
+    
+使用命令：
+
+**ins=solver(goal,cost,coefficient,constant,relation) #实例化求解器
+<br>ins.solve() #开始求解
+<br>ins.solution #返回最优解
+<br>ins.value #返回最优目标函数值
+<br>ins.status #返回求解状态（唯一最优解、无穷多最优解、不可行解）** 
