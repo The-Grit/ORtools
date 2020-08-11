@@ -45,7 +45,7 @@ class solver():
         self.solution = 'No solution'
         self.itera=0
         self.StandTran() # 转换为右端常数项非负、最大化的模型
-        self.canonical() # 生成阶梯式线性系统     
+        self.canonical() # 生成规范型   
         
     # 将初始的右端常数项转换为右端常数项非负的模型；将最小化问题统统转换为最大化问题
     def StandTran(self):
@@ -61,8 +61,9 @@ class solver():
         if self.goal == 0:
             self.costVector = -1*self.costVector
             self.goalChange = 1
-        
-    def canonical(self): # 返回一个线性系统的阶梯式形式，并标记松弛/剩余/人工变量;对应的标号分别为1,2,3       
+     
+    # 返回一个线性规划的规范型，并标记松弛/剩余/人工变量;对应的标号分别为1,2,3 
+    def canonical(self):       
         n=self.variableQuantity
         for i in range(self.subjectQuantity):
             if self.relationVector[i] == 0: # relation为0/1/2分别对应小等于/等式/大等于
@@ -105,8 +106,9 @@ class solver():
                 self.basicVarIndex[n-1]=i
                 self.subVar[i]=n-1
                 self.art=1
-                
-    def clearArtificial(self): # 返回清除人工变量的阶梯式形式的线性系统
+    
+    # 返回清除人工变量的规范型
+    def clearArtificial(self): 
         artindex=[]    
         n=len(self.costVector)
         m=n
@@ -127,8 +129,9 @@ class solver():
         self.costVector=np.delete(self.costVector,artindex)  
         self.variableType=np.delete(self.variableType,artindex)
         self.coefficientMatrix=np.delete(self.coefficientMatrix,artindex,axis=1)
-        
-    def reducedCost(self,costVector): # 返回一个阶梯式线性系统的检验数
+    
+    # 返回一个规范型中各变量的检验数
+    def reducedCost(self,costVector): 
         reducedCostList=[]
         basicCost = []  
         for i in range(self.subjectQuantity):               
@@ -139,11 +142,10 @@ class solver():
             reducedCostList.append(reducedCost)    
         return reducedCostList
     
-    def pahseI(self): # 生成阶梯式线性系统的初始基可行解
-        # 如果所有约束都不为等于，那么无需添加人工变量;否则，就需要添加人工变量
+    # 生成规范型的初始基可行解，使基变量中不包含人工变量
+    def pahseI(self):
         if self.art:
             # 如果需要添加人工变量，那么需要先求解一个线性规划问题来决定是否有可行解
-            # 默认为最大化问题，约束转换为等式，变量非负
             tempcostVector=copy.deepcopy(self.costVector)
             for i in range(len(self.variableType)):
                 if self.variableType[i] != 3:
@@ -154,7 +156,7 @@ class solver():
             if outcome<0: # 一阶段问题是最大化问题，如果最优值outcome不为0，那么说明问题无可行解
                 outcome = "No feasible solution"
                 return outcome,None,None
-            else: # 如果最优值outcome为0，那么说明问题有可行解，清除阶梯式系统中的非基变量人工变量后再返回阶梯式线性系统
+            else: # 如果最优值outcome为0，那么说明问题有可行解，清除规范型中的人工变量
                 print("Feasible! Artificial variables can be eliminated!")
                 self.clearArtificial()
                 outcome,status=self.phaseII(self.costVector)
@@ -164,7 +166,7 @@ class solver():
                         continue
                     solution[i]=self.constantVector[self.basicVarIndex[i]]
                 return outcome,status,solution
-        else: # 如果不需要添加人工变量，那么不需要清除人工变量，直接返回阶梯式线性系统即可
+        else: # 如果不需要添加人工变量，那么不需要清除人工变量，直接返回规范型即可
             outcome,status=self.phaseII(self.costVector)
             solution=[0 for i in range(self.variableQuantity)]
             for i in range(self.variableQuantity):
@@ -173,7 +175,7 @@ class solver():
                 solution[i]=(self.constantVector[self.basicVarIndex[i]])
             return outcome,status,solution
     
-    def phaseII(self,costVector): # 对于有初始基可行解的阶梯式系统，进行单纯形算法迭代，以最大化为目标
+    def phaseII(self,costVector): # 对于有初始基可行解的规范型，进行单纯形算法迭代，以最大化为目标
         optimality = 0 # 唯一最优解的id
         infiniteOpt = 1 # 无穷多最优解的id
         unBounded = 2 # 无界解的id
@@ -215,7 +217,7 @@ class solver():
             outcome+=self.constantVector[i]*costVector[self.subVar[i]]
         return outcome
       
-    # 对于一个阶梯式形式的线性系统进行出基进基、更新系数矩阵和右端常数项
+    # 对于一个规范型进行出基进基、更新系数矩阵和右端常数项
     def iterate(self,reducedCostList): 
         self.itera+=1
         
@@ -236,7 +238,8 @@ class solver():
         self.basicVarIndex[inbasis]=self.basicVarIndex[outbasis]      
         self.basicVarIndex[outbasis]=-1
         self.subVar[j]=inbasis
-        # matrix transformation
+        
+        # 进行方程组的同解变换
         matrix=copy.deepcopy(self.coefficientMatrix)
         constant=copy.deepcopy(self.constantVector)
         
