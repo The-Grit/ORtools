@@ -33,9 +33,15 @@ binmark=[1,1,1,1,1,1,1,1,1,1] # binmark标记哪些变量属于0-1变量。binma
 gap=0.01 # gap表示当分支定界法求出上界与下界的百分比差距小于gap时，算法结束，返回最优值和最优解
 
 ins=mip.solver(goal,n,cost,coefficient,constant,relation,intmark,binmark,gap)  # 生成mip求解器实例
+
 ins.solve() # solve（）函数开始求解
+
 ins.status # 解的状态：最优解、无界解、无可行解
+
 ins.value # 最优解的值
+
 ins.solution # 最优解
+
 ins.lowerbound # 下界
+
 ins.upperbound # 上界
