@@ -1,5 +1,5 @@
 # ORtools
-A simple toy solving linear program,integer program,knapsack problem,shortest path and maximum flow.
+A simple toy solving linear programming,integer programming,knapsack problem,shortest path and maximum flow.
 
 Now includes:
-knapsack problem solver;linear program solver
+knapsack problem solver;linear programming solver; integer programming solver
